@@ -122,7 +122,7 @@ export default class JugglPlugin extends Plugin implements IJugglPlugin {
                 if (file.extension === 'md') {
                   this.openLocalGraph(file.basename);
                 } else if (file.extension === undefined) {
-                  this.openGlobalGraph(file.path);
+                  this.openGlobalGraph({ filter: "path:" + file.path });
                 } else {
                   this.openLocalGraph(file.name);
                 }
@@ -279,12 +279,9 @@ export default class JugglPlugin extends Plugin implements IJugglPlugin {
       await leaf.open(neovisView);
     }
 
-    async openGlobalGraph(path: string | undefined = undefined) {
+    async openGlobalGraph(options: Partial<IJugglSettings> = {}) {
       const leaf = this.app.workspace.getLeaf(false);
-      const settings = Object.assign({}, this.settings.globalGraphSettings);
-      if (path) {
-        settings.filter = "path:" + path;
-      }
+      const settings = Object.assign({}, this.settings.globalGraphSettings, options);
       // const query = this.localNeighborhoodCypher(name);
       const names = this.app.vault.getFiles().map((f) => f.extension === 'md'? f.basename : f.name);
       if (names.length > 250) {
